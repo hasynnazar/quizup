@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Підготовка до екзамену</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .option-btn { cursor: pointer; transition: 0.2s; }
+        .correct { background-color: #198754 !important; color: white !important; }
+        .incorrect { background-color: #dc3545 !important; color: white !important; }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-5" style="max-width: 600px;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>🎓 Твій Тренажер</h2>
+            <a href="admin.html" class="btn btn-outline-secondary btn-sm">Додати питання ⚙️</a>
+        </div>
+
+        <div id="quiz-card" class="card p-4 shadow-sm d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge bg-warning text-dark fs-6" id="timer-badge">⏳ Залишилось: <span id="time-left">15</span> сек</span>
+                <span class="text-muted fw-bold" id="question-counter"></span>
+            </div>
+            <h4 id="question-text" class="mb-4">Завантаження питання...</h4>
+            <div class="d-grid gap-2 mb-4" id="options-container">
+                </div>
+            <button id="next-btn" class="btn btn-primary w-100 d-none">Наступне питання ➡️</button>
+        </div>
+
+        <div id="result-card" class="card p-4 shadow-sm text-center d-none">
+            <h3>Вітаю! Тест завершено 🎉</h3>
+            <p class="fs-4 mt-3">Твій результат: <span id="score" class="fw-bold text-primary">0</span> з <span id="total">0</span></p>
+            <button onclick="location.reload()" class="btn btn-success mt-3">Пройти знову 🔄</button>
+        </div>
+
+        <div id="loading" class="text-center mt-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Завантажуємо питання з бази...</p>
+        </div>
+    </div>
+
+    <script>
+    const API_URL = 'http://localhost:3000/api/questions';
+    let questions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let timerInterval;
+    const TIME_LIMIT = 60;
+
+    async function loadQuestions() {
+        try {
+            const response = await fetch(API_URL);
+            questions = await response.json();
+            
+            // Рандомізація порядку питань
+            questions.sort(() => Math.random() - 0.5);
+
+            document.getElementById('loading').classList.add('d-none');
+            if (questions.length === 0) {
+                alert('База даних порожня! Спочатку додайте питання через адмінку.');
+                return;
+            }
+            document.getElementById('quiz-card').classList.remove('d-none');
+            showQuestion();
+        } catch (err) {
+            console.error(err);
+            alert('Не вдалося з\'єднатися з сервером Node.js. Перевірте термінал.');
+        }
+    }
+
+    function showQuestion() {
+        const q = questions[currentIndex];
+        document.getElementById('question-text').innerText = `${q.text}`;
+        document.getElementById('question-counter').innerText = `${currentIndex + 1} / ${questions.length}`;
+        
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        document.getElementById('next-btn').classList.add('d-none');
+        
+        // Скидаємо таймер
+        clearInterval(timerInterval);
+        let timeLeft = TIME_LIMIT;
+        document.getElementById('time-left').innerText = timeLeft;
+        document.getElementById('timer-badge').classList.replace('bg-danger', 'bg-warning');
+        document.getElementById('timer-badge').classList.replace('text-white', 'text-dark');
+        
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('time-left').innerText = timeLeft;
+            if (timeLeft <= 5) {
+                document.getElementById('timer-badge').classList.replace('bg-warning', 'bg-danger');
+                document.getElementById('timer-badge').classList.replace('text-dark', 'text-white');
+            }
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                checkAnswer(null, null, q.correctOption || q.correctoption);
+            }
+        }, 1000);
+
+        // ГНУЧКЕ ЗЧИТУВАННЯ: беремо або camelCase, або нижній регістр стовпчиків
+        let options = [
+            { key: 'A', text: q.optionA || q.optiona },
+            { key: 'B', text: q.optionB || q.optionb },
+            { key: 'C', text: q.optionC || q.optionc },
+            { key: 'D', text: q.optionD || q.optiond }
+        ];
+
+        // Фільтруємо порожні варіанти та перемішуємо
+        options = options.filter(opt => opt.text && opt.text.trim() !== '').sort(() => Math.random() - 0.5);
+
+        const correctKey = q.correctOption || q.correctoption;
+
+        options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-outline-dark text-start p-3 option-btn fw-semibold';
+            // Використовуємо порядковий номер 1, 2, 3, 4 замість A, B, C, D для відображення
+            btn.innerText = `${index + 1}) ${opt.text}`;
+            btn.dataset.key = opt.key; // Зберігаємо оригінальний ключ
+            btn.onclick = () => checkAnswer(btn, opt.key, correctKey);
+            container.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selectedBtn, selectedKey, correctKey) {
+        clearInterval(timerInterval); // Зупиняємо таймер
+        
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.disabled = true);
+
+        if (selectedKey && selectedKey.toUpperCase() === correctKey.toUpperCase()) {
+            selectedBtn.classList.remove('btn-outline-dark');
+            selectedBtn.classList.add('correct');
+            score++;
+        } else {
+            if (selectedBtn) {
+                selectedBtn.classList.remove('btn-outline-dark');
+                selectedBtn.classList.add('incorrect');
+            }
+            
+            // Шукаємо правильну кнопку за data-key
+            buttons.forEach(btn => {
+                if (btn.dataset.key.toUpperCase() === correctKey.toUpperCase()) {
+                    btn.classList.remove('btn-outline-dark');
+                    btn.classList.add('correct');
+                }
+            });
+        }
+        document.getElementById('next-btn').classList.remove('d-none');
+    }
+
+    document.getElementById('next-btn').onclick = () => {
+        currentIndex++;
+        if (currentIndex < questions.length) {
+            showQuestion();
+        } else {
+            document.getElementById('quiz-card').classList.add('d-none');
+            document.getElementById('result-card').classList.remove('d-none');
+            document.getElementById('score').innerText = score;
+            document.getElementById('total').innerText = questions.length;
+        }
+    };
+
+    loadQuestions();
+</script>
+</body>
+</html>
