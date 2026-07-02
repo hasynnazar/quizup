@@ -107,8 +107,9 @@
             { key: 'D', text: q.optionD || q.optiond }
         ];
 
-        // Фільтруємо порожні варіанти та перемішуємо
-        options = options.filter(opt => opt.text && opt.text.trim() !== '').sort(() => Math.random() - 0.5);
+        // Фільтруємо порожні варіанти (БЕЗ перемішування)
+        options = options.filter(opt => opt.text && opt.text.trim() !== '');
+        // Якщо захочеш знову ввімкнути перемішування, додай в кінець попереднього рядка: .sort(() => Math.random() - 0.5)
 
         const correctKey = q.correctOption || q.correctoption;
 
