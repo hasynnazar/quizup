@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,45 +13,57 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
         }
+
         .card {
             border: none;
             border-radius: 20px;
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
-        .option-btn { 
+
+        .option-btn {
             border-radius: 12px;
-            cursor: pointer; 
-            transition: all 0.3s ease; 
+            cursor: pointer;
+            transition: all 0.3s ease;
             border: 2px solid #e9ecef;
             background: white;
             color: #333;
         }
+
         .option-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
             border-color: #6c757d;
         }
-        .correct { 
+
+        .correct {
             background: linear-gradient(135deg, #28a745, #20c997) !important;
             color: white !important;
             border-color: transparent !important;
             box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
         }
-        .incorrect { 
+
+        .incorrect {
             background: linear-gradient(135deg, #dc3545, #f8d7da) !important;
             color: white !important;
             border-color: transparent !important;
             box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
         }
+
         .timer-badge {
             font-size: 1rem;
             padding: 8px 16px;
             border-radius: 20px;
             transition: background-color 0.3s ease;
         }
-        h2 { font-weight: 700; color: #2c3e50; margin: 0; }
+
+        h2 {
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+
         .btn-primary {
             background: linear-gradient(135deg, #007bff, #0056b3);
             border: none;
@@ -59,10 +72,12 @@
             font-weight: 600;
             transition: all 0.3s ease;
         }
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
         }
+
         .lang-select {
             width: auto;
             display: inline-block;
@@ -72,17 +87,19 @@
         }
     </style>
 </head>
+
 <body class="d-flex align-items-center py-5">
     <div class="container" style="max-width: 650px;">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 data-i18n="title">🎓 Твій Тренажер</h2>
+            <h2 data-i18n="title">🎓 QuizzUP</h2>
             <div class="d-flex gap-2 align-items-center">
                 <select id="lang-switcher" class="form-select lang-select" onchange="changeLanguage(this.value)">
                     <option value="uk">🇺🇦 UA</option>
                     <option value="pl">🇵🇱 PL</option>
                     <option value="ru">🌍 RU</option>
                 </select>
-                <a href="admin.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-i18n="addQuestionBtn">Додати питання ⚙️</a>
+                <a href="admin.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3"
+                    data-i18n="addQuestionBtn">Додати питання ⚙️</a>
             </div>
         </div>
 
@@ -109,16 +126,20 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div id="timer-container">
                     <span class="badge bg-warning text-dark timer-badge fw-bold" id="timer-badge">
-                        ⏳ <span data-i18n="timeLeft">Залишилось:</span> <span id="time-left">60</span> <span data-i18n="sec">сек</span>
+                        ⏳ <span data-i18n="timeLeft">Залишилось:</span> <span id="time-left">60</span> <span
+                            data-i18n="sec">сек</span>
                     </span>
                 </div>
-                <span class="badge bg-light text-secondary border fs-6 rounded-pill px-3 py-2" id="question-counter"></span>
+                <span class="badge bg-light text-secondary border fs-6 rounded-pill px-3 py-2"
+                    id="question-counter"></span>
             </div>
-            <h4 id="question-text" class="mb-4 fw-semibold lh-base" style="color: #2c3e50;" data-i18n="loadingQuestion">Завантаження питання...</h4>
+            <h4 id="question-text" class="mb-4 fw-semibold lh-base" style="color: #2c3e50;" data-i18n="loadingQuestion">
+                Завантаження питання...</h4>
             <div class="d-grid gap-3 mb-4" id="options-container">
                 <!-- Варіанти -->
             </div>
-            <button id="next-btn" class="btn btn-primary w-100 d-none fs-5" data-i18n="nextBtn">Наступне питання ➡️</button>
+            <button id="next-btn" class="btn btn-primary w-100 d-none fs-5" data-i18n="nextBtn">Наступне питання
+                ➡️</button>
         </div>
 
         <div id="result-card" class="card p-5 text-center d-none">
@@ -128,240 +149,242 @@
                 <p class="fs-5 mb-1 text-muted" data-i18n="yourResult">Твій результат:</p>
                 <p class="display-4 fw-bold text-primary mb-0"><span id="score">0</span> / <span id="total">0</span></p>
             </div>
-            <button onclick="location.reload()" class="btn btn-primary btn-lg w-100" data-i18n="retryBtn">Пройти знову 🔄</button>
+            <button onclick="location.reload()" class="btn btn-primary btn-lg w-100" data-i18n="retryBtn">Пройти знову
+                🔄</button>
         </div>
     </div>
 
     <script>
-    const translations = {
-        uk: {
-            title: "🎓 Твій Тренажер",
-            addQuestionBtn: "Додати питання ⚙️",
-            loading: "Завантажуємо базу питань...",
-            settingsTitle: "Налаштування тесту",
-            timeLabel: "Час на одну відповідь:",
-            time15: "15 секунд (Швидко)",
-            time30: "30 секунд (Нормально)",
-            time60: "60 секунд (Спокійно)",
-            timeInf: "Без ліміту часу",
-            startBtn: "🚀 Почати тест",
-            timeLeft: "Залишилось:",
-            sec: "сек",
-            loadingQuestion: "Завантаження питання...",
-            nextBtn: "Наступне питання ➡️",
-            resultTitle: "Тест завершено!",
-            yourResult: "Твій результат:",
-            retryBtn: "Пройти знову 🔄",
-            dbEmpty: "База даних порожня! Спочатку додайте питання через адмінку.",
-            connError: "Не вдалося з'єднатися з сервером. Перевірте з'єднання."
-        },
-        pl: {
-            title: "🎓 Twój Symulator",
-            addQuestionBtn: "Dodaj pytanie ⚙️",
-            loading: "Ładowanie bazy pytań...",
-            settingsTitle: "Ustawienia testu",
-            timeLabel: "Czas na odpowiedź:",
-            time15: "15 sekund (Szybko)",
-            time30: "30 sekund (Normalnie)",
-            time60: "60 sekund (Spokojnie)",
-            timeInf: "Bez limitu czasu",
-            startBtn: "🚀 Rozpocznij test",
-            timeLeft: "Pozostało:",
-            sec: "sek",
-            loadingQuestion: "Ładowanie pytania...",
-            nextBtn: "Następne pytanie ➡️",
-            resultTitle: "Test zakończony!",
-            yourResult: "Twój wynik:",
-            retryBtn: "Spróbuj ponownie 🔄",
-            dbEmpty: "Baza danych jest pusta! Najpierw dodaj pytania w panelu.",
-            connError: "Nie udało się połączyć z serwerem. Sprawdź połączenie."
-        },
-        ru: {
-            title: "🎓 Твой Тренажер",
-            addQuestionBtn: "Добавить вопрос ⚙️",
-            loading: "Загружаем базу вопросов...",
-            settingsTitle: "Настройки теста",
-            timeLabel: "Время на один ответ:",
-            time15: "15 секунд (Быстро)",
-            time30: "30 секунд (Нормально)",
-            time60: "60 секунд (Спокойно)",
-            timeInf: "Без лимита времени",
-            startBtn: "🚀 Начать тест",
-            timeLeft: "Осталось:",
-            sec: "сек",
-            loadingQuestion: "Загрузка вопроса...",
-            nextBtn: "Следующий вопрос ➡️",
-            resultTitle: "Тест завершен!",
-            yourResult: "Твой результат:",
-            retryBtn: "Пройти снова 🔄",
-            dbEmpty: "База данных пуста! Сначала добавьте вопросы через админку.",
-            connError: "Не удалось соединиться с сервером. Проверьте соединение."
-        }
-    };
+        const translations = {
+            uk: {
 
-    let currentLang = localStorage.getItem('appLang') || 'uk';
+                addQuestionBtn: "Додати питання ⚙️",
+                loading: "Завантажуємо базу питань...",
+                settingsTitle: "Налаштування тесту",
+                timeLabel: "Час на одну відповідь:",
+                time15: "15 секунд (Швидко)",
+                time30: "30 секунд (Нормально)",
+                time60: "60 секунд (Спокійно)",
+                timeInf: "Без ліміту часу",
+                startBtn: "🚀 Почати тест",
+                timeLeft: "Залишилось:",
+                sec: "сек",
+                loadingQuestion: "Завантаження питання...",
+                nextBtn: "Наступне питання ➡️",
+                resultTitle: "Тест завершено!",
+                yourResult: "Твій результат:",
+                retryBtn: "Пройти знову 🔄",
+                dbEmpty: "База даних порожня! Спочатку додайте питання через адмінку.",
+                connError: "Не вдалося з'єднатися з сервером. Перевірте з'єднання."
+            },
+            pl: {
 
-    function changeLanguage(lang) {
-        currentLang = lang;
-        localStorage.setItem('appLang', lang);
-        
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (translations[lang] && translations[lang][key]) {
-                el.innerText = translations[lang][key];
+                addQuestionBtn: "Dodaj pytanie ⚙️",
+                loading: "Ładowanie bazy pytań...",
+                settingsTitle: "Ustawienia testu",
+                timeLabel: "Czas na odpowiedź:",
+                time15: "15 sekund (Szybko)",
+                time30: "30 sekund (Normalnie)",
+                time60: "60 sekund (Spokojnie)",
+                timeInf: "Bez limitu czasu",
+                startBtn: "🚀 Rozpocznij test",
+                timeLeft: "Pozostało:",
+                sec: "sek",
+                loadingQuestion: "Ładowanie pytania...",
+                nextBtn: "Następne pytanie ➡️",
+                resultTitle: "Test zakończony!",
+                yourResult: "Twój wynik:",
+                retryBtn: "Spróbuj ponownie 🔄",
+                dbEmpty: "Baza danych jest pusta! Najpierw dodaj pytania w panelu.",
+                connError: "Nie udało się połączyć z serwerem. Sprawdź połączenie."
+            },
+            ru: {
+
+                addQuestionBtn: "Добавить вопрос ⚙️",
+                loading: "Загружаем базу вопросов...",
+                settingsTitle: "Настройки теста",
+                timeLabel: "Время на один ответ:",
+                time15: "15 секунд (Быстро)",
+                time30: "30 секунд (Нормально)",
+                time60: "60 секунд (Спокойно)",
+                timeInf: "Без лимита времени",
+                startBtn: "🚀 Начать тест",
+                timeLeft: "Осталось:",
+                sec: "сек",
+                loadingQuestion: "Загрузка вопроса...",
+                nextBtn: "Следующий вопрос ➡️",
+                resultTitle: "Тест завершен!",
+                yourResult: "Твой результат:",
+                retryBtn: "Пройти снова 🔄",
+                dbEmpty: "База данных пуста! Сначала добавьте вопросы через админку.",
+                connError: "Не удалось соединиться с сервером. Проверьте соединение."
             }
-        });
-        
-        // Оновлюємо мову документу
-        document.documentElement.lang = lang;
-    }
+        };
 
-    // Встановлюємо мову при завантаженні
-    document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById('lang-switcher').value = currentLang;
-        changeLanguage(currentLang);
-    });
+        let currentLang = localStorage.getItem('appLang') || 'uk';
 
-    const API_URL = 'https://quizup-backend-ywxq.onrender.com/api/questions';
-    let questions = [];
-    let currentIndex = 0;
-    let score = 0;
-    let timerInterval;
-    let selectedTimeLimit = 60;
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('appLang', lang);
 
-    async function loadQuestions() {
-        try {
-            const response = await fetch(API_URL);
-            questions = await response.json();
-            
-            questions.sort(() => Math.random() - 0.5);
-
-            document.getElementById('loading').classList.add('d-none');
-            
-            if (questions.length === 0) {
-                alert(translations[currentLang].dbEmpty);
-                return;
-            }
-            
-            document.getElementById('start-card').classList.remove('d-none');
-        } catch (err) {
-            console.error(err);
-            alert(translations[currentLang].connError);
-        }
-    }
-
-    document.getElementById('start-btn').onclick = () => {
-        selectedTimeLimit = parseInt(document.getElementById('time-select').value);
-        document.getElementById('start-card').classList.add('d-none');
-        document.getElementById('quiz-card').classList.remove('d-none');
-        
-        if (selectedTimeLimit > 10000) {
-            document.getElementById('timer-container').classList.add('d-none');
-        }
-        
-        showQuestion();
-    };
-
-    function showQuestion() {
-        const q = questions[currentIndex];
-        document.getElementById('question-text').innerText = `${q.text}`;
-        document.getElementById('question-counter').innerText = `${currentIndex + 1} / ${questions.length}`;
-        
-        const container = document.getElementById('options-container');
-        container.innerHTML = '';
-        document.getElementById('next-btn').classList.add('d-none');
-        
-        clearInterval(timerInterval);
-        
-        if (selectedTimeLimit < 10000) {
-            let timeLeft = selectedTimeLimit;
-            document.getElementById('time-left').innerText = timeLeft;
-            document.getElementById('timer-badge').classList.replace('bg-danger', 'bg-warning');
-            document.getElementById('timer-badge').classList.replace('text-white', 'text-dark');
-            
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                document.getElementById('time-left').innerText = timeLeft;
-                if (timeLeft <= 5 && timeLeft > 0) {
-                    document.getElementById('timer-badge').classList.replace('bg-warning', 'bg-danger');
-                    document.getElementById('timer-badge').classList.replace('text-dark', 'text-white');
-                }
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    checkAnswer(null, null, q.correctOption || q.correctoption);
-                }
-            }, 1000);
-        }
-
-        let options = [
-            { key: 'A', text: q.optionA || q.optiona },
-            { key: 'B', text: q.optionB || q.optionb },
-            { key: 'C', text: q.optionC || q.optionc },
-            { key: 'D', text: q.optionD || q.optiond }
-        ];
-
-        options = options.filter(opt => opt.text && opt.text.trim() !== '');
-
-        const allText = options.map(o => o.text.toLowerCase()).join(' ');
-        const hasDependency = /(a i b|a i c|a i d|b i c|b i d|c i d|a, b|wszystk|żadn|powyższ|odpowiedź|odpowiedzi|відповідь|відповіді|усі|всі|жодна|вище)/i.test(allText);
-
-        if (!hasDependency) {
-            options.sort(() => Math.random() - 0.5);
-        }
-
-        const correctKey = q.correctOption || q.correctoption;
-        const displayKeys = ['A', 'B', 'C', 'D', 'E', 'F'];
-
-        options.forEach((opt, index) => {
-            const btn = document.createElement('button');
-            btn.className = 'btn text-start p-3 option-btn fw-semibold fs-6';
-            
-            btn.innerText = `${displayKeys[index]}) ${opt.text}`;
-            btn.dataset.key = opt.key; 
-            
-            btn.onclick = () => checkAnswer(btn, opt.key, correctKey);
-            container.appendChild(btn);
-        });
-    }
-
-    function checkAnswer(selectedBtn, selectedKey, correctKey) {
-        clearInterval(timerInterval); 
-        
-        const buttons = document.querySelectorAll('.option-btn');
-        buttons.forEach(btn => btn.disabled = true);
-
-        if (selectedKey && selectedKey.toUpperCase() === correctKey.toUpperCase()) {
-            if (selectedBtn) {
-                selectedBtn.classList.add('correct');
-            }
-            score++;
-        } else {
-            if (selectedBtn) {
-                selectedBtn.classList.add('incorrect');
-            }
-            
-            buttons.forEach(btn => {
-                if (btn.dataset.key.toUpperCase() === correctKey.toUpperCase()) {
-                    btn.classList.add('correct');
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerText = translations[lang][key];
                 }
             });
-        }
-        document.getElementById('next-btn').classList.remove('d-none');
-    }
 
-    document.getElementById('next-btn').onclick = () => {
-        currentIndex++;
-        if (currentIndex < questions.length) {
+            // Оновлюємо мову документу
+            document.documentElement.lang = lang;
+        }
+
+        // Встановлюємо мову при завантаженні
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('lang-switcher').value = currentLang;
+            changeLanguage(currentLang);
+        });
+
+        const API_URL = 'https://quizup-backend-ywxq.onrender.com/api/questions';
+        let questions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let timerInterval;
+        let selectedTimeLimit = 60;
+
+        async function loadQuestions() {
+            try {
+                const response = await fetch(API_URL);
+                questions = await response.json();
+
+                questions.sort(() => Math.random() - 0.5);
+
+                document.getElementById('loading').classList.add('d-none');
+
+                if (questions.length === 0) {
+                    alert(translations[currentLang].dbEmpty);
+                    return;
+                }
+
+                document.getElementById('start-card').classList.remove('d-none');
+            } catch (err) {
+                console.error(err);
+                alert(translations[currentLang].connError);
+            }
+        }
+
+        document.getElementById('start-btn').onclick = () => {
+            selectedTimeLimit = parseInt(document.getElementById('time-select').value);
+            document.getElementById('start-card').classList.add('d-none');
+            document.getElementById('quiz-card').classList.remove('d-none');
+
+            if (selectedTimeLimit > 10000) {
+                document.getElementById('timer-container').classList.add('d-none');
+            }
+
             showQuestion();
-        } else {
-            document.getElementById('quiz-card').classList.add('d-none');
-            document.getElementById('result-card').classList.remove('d-none');
-            document.getElementById('score').innerText = score;
-            document.getElementById('total').innerText = questions.length;
-        }
-    };
+        };
 
-    loadQuestions();
+        function showQuestion() {
+            const q = questions[currentIndex];
+            document.getElementById('question-text').innerText = `${q.text}`;
+            document.getElementById('question-counter').innerText = `${currentIndex + 1} / ${questions.length}`;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            document.getElementById('next-btn').classList.add('d-none');
+
+            clearInterval(timerInterval);
+
+            if (selectedTimeLimit < 10000) {
+                let timeLeft = selectedTimeLimit;
+                document.getElementById('time-left').innerText = timeLeft;
+                document.getElementById('timer-badge').classList.replace('bg-danger', 'bg-warning');
+                document.getElementById('timer-badge').classList.replace('text-white', 'text-dark');
+
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    document.getElementById('time-left').innerText = timeLeft;
+                    if (timeLeft <= 5 && timeLeft > 0) {
+                        document.getElementById('timer-badge').classList.replace('bg-warning', 'bg-danger');
+                        document.getElementById('timer-badge').classList.replace('text-dark', 'text-white');
+                    }
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        checkAnswer(null, null, q.correctOption || q.correctoption);
+                    }
+                }, 1000);
+            }
+
+            let options = [
+                { key: 'A', text: q.optionA || q.optiona },
+                { key: 'B', text: q.optionB || q.optionb },
+                { key: 'C', text: q.optionC || q.optionc },
+                { key: 'D', text: q.optionD || q.optiond }
+            ];
+
+            options = options.filter(opt => opt.text && opt.text.trim() !== '');
+
+            const allText = options.map(o => o.text.toLowerCase()).join(' ');
+            const hasDependency = /(a i b|a i c|a i d|b i c|b i d|c i d|a, b|wszystk|żadn|powyższ|odpowiedź|odpowiedzi|відповідь|відповіді|усі|всі|жодна|вище)/i.test(allText);
+
+            if (!hasDependency) {
+                options.sort(() => Math.random() - 0.5);
+            }
+
+            const correctKey = q.correctOption || q.correctoption;
+            const displayKeys = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+            options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn text-start p-3 option-btn fw-semibold fs-6';
+
+                btn.innerText = `${displayKeys[index]}) ${opt.text}`;
+                btn.dataset.key = opt.key;
+
+                btn.onclick = () => checkAnswer(btn, opt.key, correctKey);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedBtn, selectedKey, correctKey) {
+            clearInterval(timerInterval);
+
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (selectedKey && selectedKey.toUpperCase() === correctKey.toUpperCase()) {
+                if (selectedBtn) {
+                    selectedBtn.classList.add('correct');
+                }
+                score++;
+            } else {
+                if (selectedBtn) {
+                    selectedBtn.classList.add('incorrect');
+                }
+
+                buttons.forEach(btn => {
+                    if (btn.dataset.key.toUpperCase() === correctKey.toUpperCase()) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+            document.getElementById('next-btn').classList.remove('d-none');
+        }
+
+        document.getElementById('next-btn').onclick = () => {
+            currentIndex++;
+            if (currentIndex < questions.length) {
+                showQuestion();
+            } else {
+                document.getElementById('quiz-card').classList.add('d-none');
+                document.getElementById('result-card').classList.remove('d-none');
+                document.getElementById('score').innerText = score;
+                document.getElementById('total').innerText = questions.length;
+            }
+        };
+
+        loadQuestions();
     </script>
 </body>
+
 </html>
