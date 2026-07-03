@@ -107,18 +107,29 @@
             { key: 'D', text: q.optionD || q.optiond }
         ];
 
-        // Фільтруємо порожні варіанти (БЕЗ перемішування)
+        // Фільтруємо порожні варіанти
         options = options.filter(opt => opt.text && opt.text.trim() !== '');
-        // Якщо захочеш знову ввімкнути перемішування, додай в кінець попереднього рядка: .sort(() => Math.random() - 0.5)
+
+        // Перевіряємо, чи є в текстах варіантів прив'язка до інших варіантів (наприклад: "a і b", "всі вище")
+        const allText = options.map(o => o.text.toLowerCase()).join(' ');
+        const hasDependency = /(a i b|a i c|a i d|b i c|b i d|c i d|a, b|wszystk|żadn|powyższ|odpowiedź|odpowiedzi|відповідь|відповіді|усі|всі|жодна|вище)/i.test(allText);
+
+        // Якщо прив'язки немає, безпечно перемішуємо варіанти
+        if (!hasDependency) {
+            options.sort(() => Math.random() - 0.5);
+        }
 
         const correctKey = q.correctOption || q.correctoption;
+        const displayKeys = ['A', 'B', 'C', 'D', 'E', 'F'];
 
         options.forEach((opt, index) => {
             const btn = document.createElement('button');
             btn.className = 'btn btn-outline-dark text-start p-3 option-btn fw-semibold';
-            // Використовуємо порядковий номер 1, 2, 3, 4 замість A, B, C, D для відображення
-            btn.innerText = `${index + 1}) ${opt.text}`;
-            btn.dataset.key = opt.key; // Зберігаємо оригінальний ключ
+            
+            // Завжди показуємо A, B, C, D по порядку, незалежно від того, як ми їх перемішали
+            btn.innerText = `${displayKeys[index]}) ${opt.text}`;
+            btn.dataset.key = opt.key; // Зберігаємо оригінальний ключ для перевірки правильності
+            
             btn.onclick = () => checkAnswer(btn, opt.key, correctKey);
             container.appendChild(btn);
         });
