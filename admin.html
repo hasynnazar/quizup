@@ -5,50 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Керування питаннями | Панель</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .lang-select {
+            width: auto;
+            display: inline-block;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            padding: 4px 30px 4px 15px;
+        }
+    </style>
 </head>
 <body class="bg-light">
     <div class="container-fluid py-5 px-4">
         <div class="d-flex justify-content-between align-items-center mb-4 max-width-1200 mx-auto" style="max-width: 1200px;">
-            <h2>⚙️ Панель керування тестами</h2>
-            <a href="index.html" class="btn btn-primary shadow-sm">🚀 Перейти до тестування</a>
+            <h2 data-i18n="title">⚙️ Панель керування тестами</h2>
+            <div class="d-flex gap-2 align-items-center">
+                <select id="lang-switcher" class="form-select lang-select" onchange="changeLanguage(this.value)">
+                    <option value="uk">🇺🇦 UA</option>
+                    <option value="pl">🇵🇱 PL</option>
+                    <option value="ru">🌍 RU</option>
+                </select>
+                <a href="index.html" class="btn btn-primary shadow-sm" data-i18n="goToTest">🚀 Перейти до тестування</a>
+            </div>
         </div>
         
         <div class="row g-4 max-width-1200 mx-auto" style="max-width: 1200px;">
             <div class="col-md-5">
                 <div class="card p-4 shadow-sm sticky-top" style="top: 20px;">
-                    <h4 class="mb-3 text-success">➕ Нове питання</h4>
+                    <h4 class="mb-3 text-success" id="form-title" data-i18n="newQuestion">➕ Нове питання</h4>
                     <form id="quizForm">
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Текст питання:</label>
-                            <textarea id="text" class="form-control" rows="2" required placeholder="Введіть питання..."></textarea>
+                            <label class="form-label fw-bold" data-i18n="qText">Текст питання:</label>
+                            <textarea id="text" class="form-control" rows="2" required></textarea>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label">Варіант A:</label>
+                            <label class="form-label" data-i18n="optA">Варіант A:</label>
                             <input type="text" id="optionA" class="form-control" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label">Варіант B:</label>
+                            <label class="form-label" data-i18n="optB">Варіант B:</label>
                             <input type="text" id="optionB" class="form-control" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label">Варіант C (необов'язково):</label>
+                            <label class="form-label" data-i18n="optC">Варіант C (необов'язково):</label>
                             <input type="text" id="optionC" class="form-control">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Варіант D (необов'язково):</label>
+                            <label class="form-label" data-i18n="optD">Варіант D (необов'язково):</label>
                             <input type="text" id="optionD" class="form-control">
                         </div>
                         <div class="mb-4">
-                            <label class="form-label text-success fw-bold">Правильна відповідь:</label>
+                            <label class="form-label text-success fw-bold" data-i18n="correctOpt">Правильна відповідь:</label>
                             <select id="correctOption" class="form-select" required>
-                                <option value="A">Варіант A</option>
-                                <option value="B">Варіант B</option>
-                                <option value="C">Варіант C</option>
-                                <option value="D">Варіант D</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
                             </select>
                         </div>
-                        <button type="submit" id="submitBtn" class="btn btn-success w-100 py-2 fw-bold">Зберегти в базу ✨</button>
-                        <button type="button" id="cancelEditBtn" class="btn btn-secondary w-100 py-2 fw-bold mt-2 d-none" onclick="cancelEdit()">Скасувати</button>
+                        <button type="submit" id="submitBtn" class="btn btn-success w-100 py-2 fw-bold" data-i18n="saveBtn">Зберегти в базу ✨</button>
+                        <button type="button" id="cancelEditBtn" class="btn btn-secondary w-100 py-2 fw-bold mt-2 d-none" onclick="cancelEdit()" data-i18n="cancelBtn">Скасувати</button>
                     </form>
                 </div>
             </div>
@@ -56,11 +72,11 @@
             <div class="col-md-7">
                 <div class="card p-4 shadow-sm">
                     <h4 class="mb-3 text-primary d-flex justify-content-between align-items-center">
-                        📋 Всі питання в базі
+                        <span data-i18n="allQuestions">📋 Всі питання в базі</span>
                         <span id="question-count" class="badge bg-secondary fs-6">0</span>
                     </h4>
                     <div id="questions-list" class="list-group gap-3" style="max-height: 70vh; overflow-y: auto;">
-                        <p class="text-muted text-center py-4">Завантаження списку питань...</p>
+                        <p class="text-muted text-center py-4" id="list-message" data-i18n="loadingList">Завантаження списку питань...</p>
                     </div>
                 </div>
             </div>
@@ -68,57 +84,173 @@
     </div>
 
     <script>
+        const translations = {
+            uk: {
+                title: "⚙️ Панель керування тестами",
+                goToTest: "🚀 Перейти до тестування",
+                newQuestion: "➕ Нове питання",
+                qText: "Текст питання:",
+                optA: "Варіант A:",
+                optB: "Варіант B:",
+                optC: "Варіант C (необов'язково):",
+                optD: "Варіант D (необов'язково):",
+                correctOpt: "Правильна відповідь:",
+                saveBtn: "Зберегти в базу ✨",
+                cancelBtn: "Скасувати",
+                allQuestions: "📋 Всі питання в базі",
+                loadingList: "Завантаження списку питань...",
+                dbEmpty: "База даних порожня. Додайте перше питання!",
+                editBtnTooltip: "Редагувати питання",
+                deleteBtnTooltip: "Видалити питання",
+                correctLabel: "Правильно:",
+                errorLoad: "Помилка завантаження даних",
+                errServer: "Помилка сервера: ",
+                errConn: "Не вдалося зв'язатися з сервером Node.js",
+                delConfirm: "Ви впевнені, що хочете видалити це питання?",
+                delError: "Не вдалося видалити питання",
+                editTitle: "✏️ Редагування питання",
+                updateBtn: "Оновити питання ✨"
+            },
+            pl: {
+                title: "⚙️ Panel zarządzania testami",
+                goToTest: "🚀 Przejdź do testu",
+                newQuestion: "➕ Nowe pytanie",
+                qText: "Treść pytania:",
+                optA: "Opcja A:",
+                optB: "Opcja B:",
+                optC: "Opcja C (opcjonalnie):",
+                optD: "Opcja D (opcjonalnie):",
+                correctOpt: "Prawidłowa odpowiedź:",
+                saveBtn: "Zapisz w bazie ✨",
+                cancelBtn: "Anuluj",
+                allQuestions: "📋 Wszystkie pytania",
+                loadingList: "Ładowanie listy pytań...",
+                dbEmpty: "Baza jest pusta. Dodaj pierwsze pytanie!",
+                editBtnTooltip: "Edytuj pytanie",
+                deleteBtnTooltip: "Usuń pytanie",
+                correctLabel: "Poprawna:",
+                errorLoad: "Błąd ładowania danych",
+                errServer: "Błąd serwera: ",
+                errConn: "Nie udało się połączyć z serwerem",
+                delConfirm: "Czy na pewno chcesz usunąć to pytanie?",
+                delError: "Nie udało się usunąć",
+                editTitle: "✏️ Edycja pytania",
+                updateBtn: "Aktualizuj pytanie ✨"
+            },
+            ru: {
+                title: "⚙️ Панель управления тестами",
+                goToTest: "🚀 Перейти к тестированию",
+                newQuestion: "➕ Новый вопрос",
+                qText: "Текст вопроса:",
+                optA: "Вариант A:",
+                optB: "Вариант B:",
+                optC: "Вариант C (необязательно):",
+                optD: "Вариант D (необязательно):",
+                correctOpt: "Правильный ответ:",
+                saveBtn: "Сохранить в базу ✨",
+                cancelBtn: "Отмена",
+                allQuestions: "📋 Все вопросы",
+                loadingList: "Загрузка списка вопросов...",
+                dbEmpty: "База данных пуста. Добавьте первый вопрос!",
+                editBtnTooltip: "Редактировать вопрос",
+                deleteBtnTooltip: "Удалить вопрос",
+                correctLabel: "Правильно:",
+                errorLoad: "Ошибка загрузки данных",
+                errServer: "Ошибка сервера: ",
+                errConn: "Не удалось связаться с сервером",
+                delConfirm: "Вы уверены, что хотите удалить этот вопрос?",
+                delError: "Не удалось удалить вопрос",
+                editTitle: "✏️ Редактирование вопроса",
+                updateBtn: "Обновить вопрос ✨"
+            }
+        };
+
+        let currentLang = localStorage.getItem('appLang') || 'uk';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('appLang', lang);
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerText = translations[lang][key];
+                }
+            });
+            
+            document.documentElement.lang = lang;
+            
+            // Якщо ми в режимі редагування або створення, оновлюємо текст кнопки/заголовка
+            if (editingQuestionId) {
+                document.getElementById('form-title').innerText = translations[lang].editTitle;
+                document.getElementById('submitBtn').innerText = translations[lang].updateBtn;
+            }
+            
+            // Перемальовуємо список щоб оновити тексти в карточках (якщо список вже завантажено)
+            if (allQuestions.length > 0) {
+                renderQuestions(allQuestions);
+            } else {
+                const msgEl = document.getElementById('list-message');
+                if (msgEl) msgEl.innerText = translations[lang].dbEmpty;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('lang-switcher').value = currentLang;
+            changeLanguage(currentLang);
+        });
+
         const API_URL = 'https://quizup-backend-ywxq.onrender.com/api/questions';
         let allQuestions = [];
         let editingQuestionId = null;
 
-        // 1. Завантаження та відображення списку питань
         async function fetchQuestionsList() {
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
                 allQuestions = data;
-                
-                const listContainer = document.getElementById('questions-list');
-                document.getElementById('question-count').innerText = data.length;
-                
-                if (data.length === 0) {
-                    listContainer.innerHTML = '<p class="text-muted text-center py-4">База даних порожня. Додайте перше питання!</p>';
-                    return;
-                }
-
-                listContainer.innerHTML = '';
-                data.forEach((q, index) => {
-                    // Гнучке зчитування полів (для малих або великих літер)
-                    const txt = q.text;
-                    const qA = q.optionA || q.optiona;
-                    const qB = q.optionB || q.optionb;
-                    const qC = q.optionC || q.optionc;
-                    const qD = q.optionD || q.optiond;
-                    const corr = q.correctOption || q.correctoption;
-
-                    const item = document.createElement('div');
-                    item.className = 'list-group-item list-group-item-action p-3 rounded border shadow-sm position-relative bg-white';
-                    item.innerHTML = `
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="mb-1 text-wrap pe-5 fw-bold" style="max-width: 85%;">${index + 1}. ${txt}</h5>
-                            <button onclick="editQuestion(${q.id})" class="btn btn-outline-primary btn-sm position-absolute top-0 end-0 m-3 me-5 py-1 px-2" title="Редагувати питання">✏️</button>
-                            <button onclick="deleteQuestion(${q.id})" class="btn btn-outline-danger btn-sm position-absolute top-0 end-0 m-3 py-1 px-2" title="Видалити питання">🗑️</button>
-                        </div>
-                        <small class="d-block text-muted"><strong>A:</strong> ${qA} | <strong>B:</strong> ${qB}</small>
-                        ${qC ? `<small class="d-block text-muted"><strong>C:</strong> ${qC}</small>` : ''}
-                        ${qD ? `<small class="d-block text-muted"><strong>D:</strong> ${qD}</small>` : ''}
-                        <span class="badge bg-success mt-2">Правильно: ${corr}</span>
-                    `;
-                    listContainer.appendChild(item);
-                });
+                renderQuestions(data);
             } catch (err) {
                 console.error(err);
-                document.getElementById('questions-list').innerHTML = '<p class="text-danger text-center py-4">Помилка завантаження даних</p>';
+                document.getElementById('questions-list').innerHTML = `<p class="text-danger text-center py-4" id="list-message">${translations[currentLang].errorLoad}</p>`;
             }
         }
 
-        // 2. Обробка надсилання форми (Додавання)
+        function renderQuestions(data) {
+            const listContainer = document.getElementById('questions-list');
+            document.getElementById('question-count').innerText = data.length;
+            
+            if (data.length === 0) {
+                listContainer.innerHTML = `<p class="text-muted text-center py-4" id="list-message">${translations[currentLang].dbEmpty}</p>`;
+                return;
+            }
+
+            listContainer.innerHTML = '';
+            data.forEach((q, index) => {
+                const txt = q.text;
+                const qA = q.optionA || q.optiona;
+                const qB = q.optionB || q.optionb;
+                const qC = q.optionC || q.optionc;
+                const qD = q.optionD || q.optiond;
+                const corr = q.correctOption || q.correctoption;
+
+                const item = document.createElement('div');
+                item.className = 'list-group-item list-group-item-action p-3 rounded border shadow-sm position-relative bg-white';
+                item.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="mb-1 text-wrap pe-5 fw-bold" style="max-width: 85%;">${index + 1}. ${txt}</h5>
+                        <button onclick="editQuestion(${q.id})" class="btn btn-outline-primary btn-sm position-absolute top-0 end-0 m-3 me-5 py-1 px-2" title="${translations[currentLang].editBtnTooltip}">✏️</button>
+                        <button onclick="deleteQuestion(${q.id})" class="btn btn-outline-danger btn-sm position-absolute top-0 end-0 m-3 py-1 px-2" title="${translations[currentLang].deleteBtnTooltip}">🗑️</button>
+                    </div>
+                    <small class="d-block text-muted"><strong>A:</strong> ${qA} | <strong>B:</strong> ${qB}</small>
+                    ${qC ? `<small class="d-block text-muted"><strong>C:</strong> ${qC}</small>` : ''}
+                    ${qD ? `<small class="d-block text-muted"><strong>D:</strong> ${qD}</small>` : ''}
+                    <span class="badge bg-success mt-2">${translations[currentLang].correctLabel} ${corr}</span>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
         document.getElementById('quizForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -144,19 +276,18 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    cancelEdit(); // Скидаємо форму і стан
-                    fetchQuestionsList(); // Оновлюємо список праворуч без перезавантаження
+                    cancelEdit(); 
+                    fetchQuestionsList(); 
                 } else {
-                    alert('Помилка сервера: ' + (result.error || 'Невідома помилка'));
+                    alert(translations[currentLang].errServer + (result.error || ''));
                 }
             } catch (err) {
-                alert('Не вдалося зв\'язатися з сервером Node.js');
+                alert(translations[currentLang].errConn);
             }
         });
 
-        // 3. Видалення питання
         async function deleteQuestion(id) {
-            if (!confirm('Ви впевнені, що хочете видалити це питання?')) return;
+            if (!confirm(translations[currentLang].delConfirm)) return;
 
             try {
                 const response = await fetch(`${API_URL}/${id}`, {
@@ -165,16 +296,15 @@
 
                 if (response.ok) {
                     if (editingQuestionId === id) cancelEdit();
-                    fetchQuestionsList(); // Оновлюємо список
+                    fetchQuestionsList();
                 } else {
-                    alert('Не вдалося видалити питання');
+                    alert(translations[currentLang].delError);
                 }
             } catch (err) {
-                alert('Помилка при видаленні');
+                alert(translations[currentLang].delError);
             }
         }
 
-        // 4. Редагування питання
         function editQuestion(id) {
             const q = allQuestions.find(item => item.id === id);
             if (!q) return;
@@ -188,13 +318,12 @@
             document.getElementById('optionD').value = q.optionD || q.optiond || '';
             document.getElementById('correctOption').value = (q.correctOption || q.correctoption || 'A').toUpperCase();
 
-            document.getElementById('submitBtn').innerText = 'Оновити питання ✨';
+            document.getElementById('submitBtn').innerText = translations[currentLang].updateBtn;
             document.getElementById('submitBtn').classList.replace('btn-success', 'btn-primary');
             document.getElementById('cancelEditBtn').classList.remove('d-none');
             
-            // Змінюємо заголовок
-            const title = document.querySelector('.card h4');
-            title.innerText = '✏️ Редагування питання';
+            const title = document.getElementById('form-title');
+            title.innerText = translations[currentLang].editTitle;
             title.classList.remove('text-success');
             title.classList.add('text-primary');
         }
@@ -203,17 +332,16 @@
             editingQuestionId = null;
             document.getElementById('quizForm').reset();
             
-            document.getElementById('submitBtn').innerText = 'Зберегти в базу ✨';
+            document.getElementById('submitBtn').innerText = translations[currentLang].saveBtn;
             document.getElementById('submitBtn').classList.replace('btn-primary', 'btn-success');
             document.getElementById('cancelEditBtn').classList.add('d-none');
             
-            const title = document.querySelector('.card h4');
-            title.innerText = '➕ Нове питання';
+            const title = document.getElementById('form-title');
+            title.innerText = translations[currentLang].newQuestion;
             title.classList.remove('text-primary');
             title.classList.add('text-success');
         }
 
-        // Запуск при завантаженні сторінки
         fetchQuestionsList();
     </script>
 </body>
